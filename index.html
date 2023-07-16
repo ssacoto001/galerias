@@ -24,10 +24,6 @@
       bottom: 0;
       opacity: 0.5;
       z-index: 9999;
-    
-      display: flex;
-      justify-content: center;
-      align-items: center;
     }
 
     .screenshot-blocker > p {
@@ -62,35 +58,41 @@
     <p>Não é possível fazer um PrintScreen.</p>
   </div>
   <div class="gallery">
-    <?php
-    $files = scandir('fotos');
-    foreach ($files as $file) {
-      if (is_file('fotos/' . $file) && strrpos($file, '.jpg') !== false) {
-        echo '<img src="fotos/' . $file . '" alt="' . $file . '">';
+    <script>
+      var imagens = [];
+      var diretorio = 'fotos';
+      var imagensCarregadas = 0;
+
+      function carregarImagens() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', diretorio + '/*.jpg', true);
+        xhr.onload = function() {
+          var imagens = xhr.responseText.split('\n');
+          for (var i = 0; i < imagens.length; i++) {
+            imagens[i] = diretorio + '/' + imagens[i];
+          }
+          imagensCarregadas = imagens.length;
+          for (var i = 0; i < imagens.length; i++) {
+            adicionarImagem(imagens[i]);
+          }
+        };
+        xhr.send();
       }
-    }
-    ?>
+
+      function adicionarImagem(imagem) {
+        var img = document.createElement('img');
+        img.src = imagem;
+        img.alt = imagem;
+        document.querySelector('.gallery').appendChild(img);
+      }
+
+      carregarImagens();
+    </script>
+    <div class="full-screen">
+      <img src="" alt="">
+      <button class="button">Imprimir</button>
+    </div>
   </div>
-  <div class="full-screen">
-    <img src="" alt="">
-    <button class="button">Imprimir</button>
-  </div>
 
-  <script>
-    function showFullScreenImage(image) {
-      $('.full-screen img').attr('src', image);
-      $('.full-screen').show();
-    }
-
-    $('.gallery img').click(function() {
-      showFullScreenImage($(this).attr('src'));
-    });
-
-    $('.button').click(function() {
-      var printWindow = window.open('', 'Print', 'width=800,height=600');
-      printWindow.document.write($('.full-screen img').clone().html());
-      printWindow.print();
-    });
-  </script>
 </body>
 </html>
