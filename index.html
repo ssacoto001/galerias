@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Galeria de fotos</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      margin: 0;
+      padding: 0;
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+    }
+
+    .screenshot-blocker {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      opacity: 0.5;
+      z-index: 9999;
+    
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .screenshot-blocker > p {
+      color: white;
+      font-size: 20px;
+    }
+
+    .gallery {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .gallery img {
+      margin: 10px;
+    }
+
+    .full-screen {
+      display: none;
+    }
+
+    .button {
+      display: block;
+      margin: 10px;
+      padding: 10px;
+      border: 1px solid black;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="screenshot-blocker">
+    <p>Não é possível fazer um PrintScreen.</p>
+  </div>
+  <div class="gallery">
+    <?php
+    $files = scandir('fotos');
+    foreach ($files as $file) {
+      if (is_file('fotos/' . $file) && strrpos($file, '.jpg') !== false) {
+        echo '<img src="fotos/' . $file . '" alt="' . $file . '">';
+      }
+    }
+    ?>
+  </div>
+  <div class="full-screen">
+    <img src="" alt="">
+    <button class="button">Imprimir</button>
+  </div>
+
+  <script>
+    function showFullScreenImage(image) {
+      $('.full-screen img').attr('src', image);
+      $('.full-screen').show();
+    }
+
+    $('.gallery img').click(function() {
+      showFullScreenImage($(this).attr('src'));
+    });
+
+    $('.button').click(function() {
+      var printWindow = window.open('', 'Print', 'width=800,height=600');
+      printWindow.document.write($('.full-screen img').clone().html());
+      printWindow.print();
+    });
+  </script>
+</body>
+</html>
